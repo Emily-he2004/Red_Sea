@@ -1,6 +1,6 @@
-cmd-f 2024: red sea
+<h1>cmd-f 2024: red sea</h1>
 
-references
+<h2>references</h2>
 <h3>refugee camps data</h3>
 locations:Beach camp, Bureij camp, Deir El-Balah Camp, Jabalia Camp, Khan Younis Camp, Maghazi camp, Nuseirat camp, Rafah camp 
 <br> from https://www.unrwa.org/where-we-work/gaza-strip/beach-camp 
