@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     "/mapbox-token",
     createProxyMiddleware({
-      target: "http://localhost:8000",
+      target: "http://localhost:8080",
       changeOrigin: true,
     })
   );
@@ -12,7 +12,7 @@ module.exports = function (app) {
   app.use(
     "/safest-route",
     createProxyMiddleware({
-      target: "http://localhost:8000",
+      target: "http://localhost:8080",
       changeOrigin: true,
     })
   );
@@ -20,7 +20,7 @@ module.exports = function (app) {
   app.use(
     "/locations",
     createProxyMiddleware({
-      target: "http://localhost:8000",
+      target: "http://localhost:8080",
       changeOrigin: true,
     })
   );

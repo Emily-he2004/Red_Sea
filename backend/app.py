@@ -88,4 +88,4 @@ def get_locations():
     return jsonify(locations)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(debug=True, port=8080)

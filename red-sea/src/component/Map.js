@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
-export default function Map() {
+const App = () => {
   const [map, setMap] = useState(null);
   const [camps, setCamps] = useState([]);
   const [selectedCamp, setSelectedCamp] = useState(null);
+  const [searchLocation, setSearchLocation] = useState({
+    lat: null,
+    lng: null,
+  });
 
   useEffect(() => {
     fetch("/mapbox-token")
@@ -14,7 +19,7 @@ export default function Map() {
         const initMap = new mapboxgl.Map({
           container: "map",
           style: "mapbox://styles/mapbox/streets-v11",
-          center: [34.445394, 31.532197],
+          center: [34.3824, 31.4227],
           zoom: 10,
         });
 
@@ -52,27 +57,93 @@ export default function Map() {
       });
 
     fetch("/locations")
-      .then((res) => res.json())
-      .then((camps) => setCamps(camps));
+      .then((response) => response.json())
+      .then((data) => {
+        setCamps(data);
+      });
   }, []);
 
   useEffect(() => {
     if (map && selectedCamp) {
-      const { LONG, LAT } = selectedCamp;
+      const { LONG: campLng, LAT: campLat } = selectedCamp;
+
       document
         .querySelectorAll(".mapboxgl-marker")
         .forEach((marker) => marker.remove());
-      new mapboxgl.Marker().setLngLat([LONG, LAT]).addTo(map);
-      map.flyTo({ center: [LONG, LAT], zoom: 12 });
+
+      new mapboxgl.Marker().setLngLat([campLng, campLat]).addTo(map);
+
+      map.flyTo({ center: [campLng, campLat], zoom: 12 });
+
+      fetch(
+        `/safest-route?start_lat=${searchLocation.lat}&start_long=${searchLocation.lng}&end_lat=${campLat}&end_long=${campLng}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.geometry) {
+            const routeGeometry = data.geometry;
+            if (map.getSource("route")) {
+              map.getSource("route").setData(routeGeometry);
+            } else {
+              map.addSource("route", {
+                type: "geojson",
+                data: routeGeometry,
+              });
+
+              map.addLayer({
+                id: "route",
+                type: "line",
+                source: "route",
+                layout: {
+                  "line-join": "round",
+                  "line-cap": "round",
+                },
+                paint: {
+                  "line-color": "#ff0000",
+                  "line-width": 3,
+                },
+              });
+            }
+          }
+        })
+        .catch((error) =>
+          console.error("Error fetching the safest route:", error)
+        );
     }
-  }, [map, selectedCamp]);
+  }, [map, selectedCamp, searchLocation]);
+
+  const handleSearchChange = (e) => {
+    const searchText = e.target.value;
+    if (searchText.length > 3) {
+      // To avoid too many requests, only search if the query is longer than 3 characters
+      fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          searchText
+        )}.json?access_token=${mapboxgl.accessToken}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const places = data.features;
+          if (places.length > 0) {
+            const place = places[0];
+            const [lng, lat] = place.center;
+
+            setSearchLocation({ lat, lng }); // Update the state with the new location
+          }
+        })
+        .catch((error) => console.error("Error during geocoding:", error));
+    }
+  };
 
   return (
-    <div className="Map">
-      <h2>Map</h2>
+    <div>
+      <input
+        type="text"
+        placeholder="Search for a place"
+        onChange={handleSearchChange}
+      />
       <select
-        className="camp-options"
-        onChange={(e) => setSelectedCamp(camps[e.target.value])}
+        onChange={(e) => setSelectedCamp(camps[parseInt(e.target.value, 10)])}
       >
         <option>Select a Camp</option>
         {camps.map((camp, index) => (
@@ -85,7 +156,7 @@ export default function Map() {
         id="map"
         style={{
           position: "absolute",
-          top: 55,
+          top: 200,
           bottom: 0,
           right: 1,
           width: "100%",
@@ -93,4 +164,6 @@ export default function Map() {
       ></div>
     </div>
   );
-}
+};
+
+export default App;
