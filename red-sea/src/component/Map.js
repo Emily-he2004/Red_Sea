@@ -142,7 +142,7 @@ const App = () => {
         placeholder="Search for a place"
         onChange={handleSearchChange}
       />
-      <select
+      <br></br><select
         onChange={(e) => setSelectedCamp(camps[parseInt(e.target.value, 10)])}
       >
         <option>Select a Camp</option>
