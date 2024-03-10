@@ -1,17 +1,12 @@
-import Header from "./component/Header";
 
-function LandingPage() {
+function Landing () {
   return (
     <div className="landing-page">
-      <Header />
+      <h1>Welcome to Red Sea</h1>
+      <p>A safe passage in the endless war.</p>
+      <button>Get Started</button>
     </div>
   );
 }
 
-export default LandingPage;
-
-// Put the following into the App.js is using this page;
-// import Landing from "./Pages/Landing";
-{
-  /* <Landing /> This is a optional initial page before seeing the map. */
-}
+export default Landing;
