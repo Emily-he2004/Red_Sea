@@ -7,23 +7,10 @@ import requests
 import pandas as pd
 import math
 import requests
-import os
-
-# Get the directory of the current Python script
-current_directory = os.path.dirname(os.path.abspath(__file__))
-
-# Define relative paths to CSV files
-csv_directory = os.path.join(current_directory, "datasets")
-gaza_danger_levels_csv_path = os.path.join(csv_directory, "gaza_danger_levels.csv")
-refugee_camps_csv_path = os.path.join(csv_directory, "refugee_camps.csv")
 
 # Import files
-df = pd.read_csv(gaza_danger_levels_csv_path)
-df_camp = pd.read_csv(refugee_camps_csv_path)
-
-# Import files
-# df = pd.read_csv("gaza_danger_levels.csv")
-# df_camp = pd.read_csv("refugee_camps.csv")
+df = pd.read_csv("/Users/shanakesia/Desktop/CMPT/cmd-f-2024-pre-hackathon/backend/datasets/gaza_danger_levels.csv")
+df_camp = pd.read_csv("/Users/shanakesia/Desktop/CMPT/cmd-f-2024-pre-hackathon/backend/datasets/refugee_camps.csv")
 
 app = Flask(__name__)
 
@@ -88,4 +75,4 @@ def get_locations():
     return jsonify(locations)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=8000)
